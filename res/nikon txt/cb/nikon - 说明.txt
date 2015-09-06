@@ -1,0 +1,13 @@
+CB(缸体或缸盖)_LTG（型号）：plan name    
+LTG 2.0 Turbo Block LK(工件描述) ：part descripiton
+Shanghai JinQiao Powertrain :plant
+1102 LGE Cylinder Block :department
+LTG MY2016-BK :part NO
+OP30A,OP70A :operation
+Spindle 1 :spindle
+efasdf : part serial NO
+2013-2-22 :change level
+LK_1 : gage
+OP30A,OP70A Line 1 : machine
+PPAP : event
+Line 1 : module

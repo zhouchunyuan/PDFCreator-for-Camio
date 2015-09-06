@@ -1,0 +1,13 @@
+CB_LTG
+LTG 2.0 Turbo Block LK
+Shanghai JinQiao Powertrain
+1102 LGE Cylinder Block
+LTG MY2016-BK
+OP30A,OP70A
+Spindle 1
+efasdf
+2013-2-22
+LK_1
+OP30A,OP70A Line 1
+PPAP
+Line 1

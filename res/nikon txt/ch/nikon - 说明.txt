@@ -1,0 +1,13 @@
+LTG-CH
+LTG 2.0 Turbo Head LK
+Shanghai JinQiao Powertrain
+1101 LGE Cylinder Head
+LTG-CH
+OP90A,OP100A,OP110A,OP140A
+Spindle 1
+dfefds
+2013-2-22
+LK_1
+OP90A,OP100A,OP110A,OP140A Line 1
+Production
+Line 1
