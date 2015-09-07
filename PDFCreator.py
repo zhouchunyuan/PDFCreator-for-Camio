@@ -12,6 +12,7 @@ pdfmetrics.registerFont(UnicodeCIDFont('STSong-Light'))
 import sys,datetime,re
 import Tkinter as tk
 import tkMessageBox as mbox
+import tkFileDialog
 ######################################
 NIKON_TXT_FILE = 'C:\\nikon.txt'
 MAIN_RES_FILE = 'D:\\LGE_Report\\Program\\main.res' # will be given as argv from <PDF.vbs>
@@ -35,8 +36,40 @@ def showMessage(msg):
     window = tk.Tk()
     window.wm_withdraw()
     mbox.showinfo('Info',msg)
-    
-   
+###################### function getResFileDir ######### 
+# get res path and name
+#######################################################
+def getResFileDir(pathname):
+    options = {}
+    options['defaultextension'] = '.res'
+    options['filetypes'] = [('res files', '.res')]
+    options['initialfile'] = pathname
+    options['title'] = 'Please select the RES file'
+    root = tk.Tk()
+    root.withdraw()
+    file_path_string = tkFileDialog.askopenfilename(**options)
+    return file_path_string
+###################### function getResDir ######### 
+# to guess (find) RES file dir
+# according to plan_name in <Nikon.txt>
+#       pattern = re.compile(r'(\w\w)_([\w ]+)')# to match name like 'LTG MY2016'
+#       match = pattern.match(line_Plan_Name)
+#       Body_OR_Head=match.group(1)
+#       Type_name   =match.group(2)
+#####################################################
+def getResDir(Body_OR_Head,Type_name):
+    resPathName = ''
+    if Body_OR_Head.strip()=='CB':
+        if Type_name.strip()=='LTG' or Type_name.strip()=='LKW':
+            resPathName = 'D:\\LGE\\CB\\'+Type_name.strip()+'\\Report\\'
+        elif Type_name.strip()=='LTG MY2016': 
+            resPathName = 'D:\\LGE\\CB MY2016\\LTG\\Report\\'
+        elif Type_name.strip()=='LD4 MY2016':
+            resPathName = 'D:\\LGE\\CB MY2016\\LD4\\Report\\'
+    elif Body_OR_Head.strip()=='CH':
+        resPathName = 'D:\\LGE\\CH\\Report\\'
+    resPathName = resPathName+'main.res'
+    return resPathName
 ###################### function findline ############ 
 # This function returns a list if it is a data line
 # Return None, if not.
@@ -219,8 +252,7 @@ def getParameters(res_filename):
     global OUTPUT_PDF_DIR
     global OUTPUT_PDF_NAME
     global MAIN_RES_FILE
-    if res_filename is not None:
-        MAIN_RES_FILE = res_filename
+
     
     f=open(NIKON_TXT_FILE)
     line_Plan_Name           = f.readline()
@@ -238,12 +270,14 @@ def getParameters(res_filename):
     line_Module              = f.readline()
 
     #prepare pdf name part1
-    pattern = re.compile(r'(\w\w)_(\w+)')
+    pattern = re.compile(r'(\w\w)_([\w ]+)')# to match name like 'LTG MY2016'
     match = pattern.match(line_Plan_Name)
     if match:
         OUTPUT_PDF_DIR = OUTPUT_PDF_DIR +'\\'+ match.group(2)+'\\'+match.group(1)# LTG\CB
         Body_OR_Head=match.group(1)
         Type_name   =match.group(2)
+        MAIN_RES_FILE = getResDir(Body_OR_Head,Type_name)
+        #print MAIN_RES_FILE
     else:
         showMessage('Can not find plan name: <'+plan_name_line+'>')
 
@@ -294,6 +328,12 @@ def getParameters(res_filename):
 
     f.close
 
+
+    if res_filename is not None:
+        MAIN_RES_FILE = res_filename
+    else:
+        MAIN_RES_FILE = getResFileDir(MAIN_RES_FILE)
+        
     #read from RES
     f=open(MAIN_RES_FILE)
     
@@ -307,10 +347,13 @@ def getParameters(res_filename):
     match = pattern.match(content)
     if match:
         Run_Time=Paragraph(match.group(2).replace(' ',''),styles['Italic'])
-    pattern = re.compile(r'(.|\n)+?COMP,(\d+\.\d+)')
-    match = pattern.match(content)
-    if match:
-        Temperature=Paragraph(match.group(2),styles['Italic'])
+    if 'Temperature Compensation:  OFF' in content :# when temprature off, set to 20
+        Temperature=Paragraph('20',styles['Italic'])
+    else:
+        pattern = re.compile(r'(.|\n)+?COMP,(\d+\.\d+)')
+        match = pattern.match(content)
+        if match:
+            Temperature=Paragraph(match.group(2),styles['Italic'])
     pattern = re.compile(r'-+\n(\d+-.+-\d+)')
     match = pattern.match(content)
     if match:
