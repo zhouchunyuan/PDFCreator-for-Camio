@@ -273,13 +273,29 @@ def getParameters(res_filename):
     pattern = re.compile(r'(\w\w)_([\w ]+)')# to match name like 'LTG MY2016'
     match = pattern.match(line_Plan_Name)
     if match:
-        OUTPUT_PDF_DIR = OUTPUT_PDF_DIR +'\\'+ match.group(2)+'\\'+match.group(1)# LTG\CB
+        sub_pattern = re.compile(r'(\w+) (\w+)')# to match 2nd group if like 'LTG MY2016'
+        sub_match = sub_pattern.match(match.group(2))
+        if sub_match:
+            OUTPUT_PDF_DIR = OUTPUT_PDF_DIR +'\\'+ sub_match.group(1)+'\\'+match.group(1)+' '+ sub_match.group(2)# LTG\CB
+        else:
+            OUTPUT_PDF_DIR = OUTPUT_PDF_DIR +'\\'+ match.group(2)+'\\'+match.group(1)# LTG\CB
+        #print OUTPUT_PDF_DIR +" ===test==="
         Body_OR_Head=match.group(1)
         Type_name   =match.group(2)
         MAIN_RES_FILE = getResDir(Body_OR_Head,Type_name)
         #print MAIN_RES_FILE
     else:
-        showMessage('Can not find plan name: <'+plan_name_line+'>')
+        pattern = re.compile(r'(\w+)-(CH)')# to match name like 'LTG-CH'
+        match = pattern.match(line_Plan_Name)
+        if match:
+            OUTPUT_PDF_DIR = OUTPUT_PDF_DIR +'\\'+ match.group(1)+'\\'+match.group(2)# LTG\CH
+            #print OUTPUT_PDF_DIR +" ===test==="
+            Body_OR_Head=match.group(2)
+            Type_name   =match.group(1)
+            MAIN_RES_FILE = getResDir(Body_OR_Head,Type_name)
+            #print MAIN_RES_FILE
+        else:
+            showMessage('Can not find plan name: <'+plan_name_line+'>')
 
     #prepare pdf name part2
     pattern = re.compile(r'OP(\d{2,3})?.*')
@@ -343,13 +359,14 @@ def getParameters(res_filename):
     match = pattern.match(content)
     if match:
         Start_Time=Paragraph(match.group(2),styles['Italic'])
-    pattern = re.compile(r'(.|\n)+Duration (\d+ ?mins ?\d+ ?secs)')
+    pattern = re.compile(r'(.|\n)+Duration +((\d+ +mins)? +\d+ +secs)')
+    #begin with \n, and group(3) is optional, and " +" means many spaces
     match = pattern.match(content)
     if match:
         Run_Time=Paragraph(match.group(2).replace(' ',''),styles['Italic'])
-    if 'Temperature Compensation:  OFF' in content :# when temprature off, set to 20
-        Temperature=Paragraph('20',styles['Italic'])
-    else:
+    #make default temperature = 20    
+    Temperature=Paragraph('20',styles['Italic'])
+    if 'Temperature Compensation:  OFF' not in content :# when temprature off, set to 20
         pattern = re.compile(r'(.|\n)+?COMP,(\d+\.\d+)')
         match = pattern.match(content)
         if match:
