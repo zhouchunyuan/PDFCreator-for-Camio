@@ -295,7 +295,7 @@ def getParameters(res_filename):
             MAIN_RES_FILE = getResDir(Body_OR_Head,Type_name)
             #print MAIN_RES_FILE
         else:
-            showMessage('Can not find plan name: <'+plan_name_line+'>')
+            showMessage('Can not find plan name: <'+line_Plan_Name+'>')
 
     #prepare pdf name part2
     pattern = re.compile(r'OP(\d{2,3})?.*')
@@ -344,8 +344,9 @@ def getParameters(res_filename):
 
     f.close
 
-
+    
     if res_filename is not None:
+        #showMessage('inside getParameter, res_filename='+res_filename)
         MAIN_RES_FILE = res_filename
     else:
         MAIN_RES_FILE = getResFileDir(MAIN_RES_FILE)
@@ -359,7 +360,8 @@ def getParameters(res_filename):
     match = pattern.match(content)
     if match:
         Start_Time=Paragraph(match.group(2),styles['Italic'])
-    pattern = re.compile(r'(.|\n)+Duration +((\d+ +mins)? +\d+ +secs)')
+    #pattern = re.compile(r'(.|\n)+Duration +((\d+ +mins)? +\d+ +secs)')
+    pattern = re.compile(r'(.|\n)+Duration +((\d+ +mins +)?\d+ +secs)')
     #begin with \n, and group(3) is optional, and " +" means many spaces
     match = pattern.match(content)
     if match:
@@ -431,10 +433,13 @@ def main(argv):
     Story.append(t)
     ################### table 1st block ##############################
     #check command parameter number
+    tmpshowmsg = 'arg number'+str(len(argv))
+    #showMessage( tmpshowmsg)
     if len(argv)!=2 :
         showMessage('.res file name error!')    
         data= getParameters(None)
     else:
+        #showMessage( 'argv[1]')#show ref pathname
         data=getParameters(argv[1])
         
     t=Table(data,
@@ -490,6 +495,7 @@ def main(argv):
     Story.append(t)
 
     doc = SimpleDocTemplate(OUTPUT_PDF_DIR+OUTPUT_PDF_NAME)
+    #showMessage('output='+OUTPUT_PDF_DIR+OUTPUT_PDF_NAME)
     doc.build(Story, onFirstPage=myFirstPage, onLaterPages=myLaterPages)
 
 # >>>>>>> entry point >>>>>>
