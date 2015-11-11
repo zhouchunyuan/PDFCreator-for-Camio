@@ -5,9 +5,10 @@ from reportlab.rl_config import defaultPageSize
 from reportlab.lib.units import inch,cm
 from reportlab.lib.pagesizes import A4
 
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.cidfonts import UnicodeCIDFont
-pdfmetrics.registerFont(UnicodeCIDFont('STSong-Light'))
+from reportlab.pdfbase import pdfmetrics,ttfonts
+#from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+#pdfmetrics.registerFont(UnicodeCIDFont('STSong-Light'))
+pdfmetrics.registerFont(ttfonts.TTFont('song','D:\\LGE_Report\\Program\\simfang.ttf'))
 
 import sys,datetime,re
 import Tkinter as tk
@@ -460,7 +461,7 @@ def main(argv):
          #('FONT', (3, 2), (3, -1), 'Helvetica'),
          #('FONT', (-2, 0), (-2, 1), 'Helvetica'),
          #('FONT', (-1, 4), (-1, -1), 'Helvetica'),
-         ('FONT', (1, 5), (1, 5), 'STSong-Light'),
+         ('FONT', (1, 5), (1, 5), 'song'),
          ('BOX', (0, 0), (-1, -1), 1.5, colors.black),
          ('BOX', (0, 0), (-1, -1), 0.5, colors.white)
          ])
@@ -486,6 +487,8 @@ def main(argv):
         if len(row)==1:
             style.append(('SPAN',(0,rowIdx),(-1,rowIdx)))
             style.append(('BOTTOMPADDING',(0,rowIdx),(-1,rowIdx),-8))
+        if len(row)>1 and len(row[0])>30:
+            style.append(('FONTSIZE',(0,rowIdx),(0,rowIdx),6))# incase of too long, make it smaller
     t.setStyle(style)
     ###### Style setting  ####
                          

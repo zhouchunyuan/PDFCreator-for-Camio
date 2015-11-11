@@ -33,5 +33,6 @@ Section "" ;No components page, name is not important
   
   ; Put file there
   FILE /r "build\exe.win-amd64-2.7\*.*"
+  FILE "res\simfang.ttf"
   
 SectionEnd ; end the section
